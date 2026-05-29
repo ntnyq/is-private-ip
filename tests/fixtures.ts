@@ -11,6 +11,23 @@ export const RFC1918_PRIVATE_IPV4_CASES = [
   '192.168.255.255',
 ]
 
+// IPv4-mapped IPv6 addresses that should return true for isPrivateIpv6.
+export const IPV4_MAPPED_PRIVATE_IPV6_CASES = [
+  '::ffff:10.0.0.1',
+  '::ffff:172.16.0.1',
+  '::ffff:192.168.1.1',
+]
+
+// IPv4-mapped IPv6 addresses that should return true for isNonPublicIpv6.
+export const IPV4_MAPPED_NON_PUBLIC_IPV6_CASES = [
+  '::ffff:10.0.0.1',
+  '::ffff:127.0.0.1',
+  '::ffff:100.64.0.1',
+  '::ffff:169.254.1.1',
+  '::ffff:192.168.1.1',
+  '::ffff:240.0.0.1',
+]
+
 // IPv4 addresses outside RFC 1918 ranges that should return false for isPrivateIpv4.
 export const NON_PRIVATE_IPV4_CASES = [
   '0.0.0.0',
@@ -44,6 +61,8 @@ export const INVALID_IPV4_CASES = [
   ' 10.0.0.1',
   '10.0.0.1 ',
   '01.02.03.04x',
+  '010.000.000.001',
+  '001.002.003.004',
 ]
 
 // IPv6 ULA addresses that should return true for isPrivateIpv6.

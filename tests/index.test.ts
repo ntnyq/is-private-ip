@@ -10,6 +10,8 @@ import {
 import {
   INVALID_IPV4_CASES,
   INVALID_IPV6_CASES,
+  IPV4_MAPPED_NON_PUBLIC_IPV6_CASES,
+  IPV4_MAPPED_PRIVATE_IPV6_CASES,
   NON_PRIVATE_IPV4_CASES,
   NON_PRIVATE_IPV6_CASES,
   NON_PUBLIC_IP_FALSE_CASES,
@@ -52,6 +54,13 @@ describe(isPrivateIpv4, () => {
 describe(isPrivateIpv6, () => {
   it.each(PRIVATE_IPV6_CASES)(
     'returns true for unique local addresses (fc00::/7): %s',
+    ip => {
+      expect(isPrivateIpv6(ip)).toBe(true)
+    },
+  )
+
+  it.each(IPV4_MAPPED_PRIVATE_IPV6_CASES)(
+    'returns true for IPv4-mapped private addresses: %s',
     ip => {
       expect(isPrivateIpv6(ip)).toBe(true)
     },
@@ -112,6 +121,13 @@ describe(isNonPublicIpv6, () => {
 
   it.each(NON_PUBLIC_IPV6_LINK_LOCAL_CASES)(
     'returns true for link-local addresses (fe80::/10): %s',
+    ip => {
+      expect(isNonPublicIpv6(ip)).toBe(true)
+    },
+  )
+
+  it.each(IPV4_MAPPED_NON_PUBLIC_IPV6_CASES)(
+    'returns true for IPv4-mapped non-public addresses: %s',
     ip => {
       expect(isNonPublicIpv6(ip)).toBe(true)
     },

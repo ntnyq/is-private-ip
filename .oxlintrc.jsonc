@@ -30,6 +30,8 @@
     "capitalized-comments": "off",
     "sort-imports": "off",
     "no-ternary": "off",
+    "no-bitwise": "off",
+    "max-statements": "off",
     "no-undefined": "off",
     "no-plusplus": "off",
     "no-magic-numbers": "off",
