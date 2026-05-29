@@ -98,6 +98,7 @@ Returns `true` if either `isNonPublicIpv4(hostname)` or `isNonPublicIpv6(hostnam
 - Invalid input returns `false`
 - Hostnames like `localhost` return `false`
 - Whitespace around IPv4 input is treated as invalid
+- IPv4-mapped IPv6 addresses (e.g. `::ffff:10.0.0.1`) are recognized and checked against IPv4 ranges
 
 ## Links
 
