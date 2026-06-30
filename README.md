@@ -97,8 +97,11 @@ Returns `true` if either `isNonPublicIpv4(hostname)` or `isNonPublicIpv6(hostnam
 
 - Invalid input returns `false`
 - Hostnames like `localhost` return `false`
-- Whitespace around IPv4 input is treated as invalid
-- IPv4-mapped IPv6 addresses (e.g. `::ffff:10.0.0.1`) are recognized and checked against IPv4 ranges
+- IPv4 input must use strict dotted-decimal notation; empty octets and leading-zero octets are invalid
+- IPv6 input is fully validated and may use full, compressed, or dotted-IPv4-tail notation
+- IPv6 zone identifiers such as `fe80::1%eth0` are not supported
+- IPv4-mapped IPv6 addresses in `::ffff:0:0/96` (e.g. `::ffff:10.0.0.1`) are recognized and checked against IPv4 ranges
+- Other IPv6 addresses with a dotted IPv4 tail are checked by their IPv6 prefix
 
 ## Links
 

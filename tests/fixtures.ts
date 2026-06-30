@@ -52,9 +52,13 @@ export const NON_PRIVATE_IPV4_CASES = [
 export const INVALID_IPV4_CASES = [
   '',
   'localhost',
+  '.10.0.0',
   '1.2.3',
+  '1.2.3.',
   '1.2.3.4.5',
   '1..3.4',
+  '10.0.0.',
+  '192.168.1.',
   'a.b.c.d',
   '256.0.0.1',
   '-1.0.0.0',
@@ -69,6 +73,7 @@ export const INVALID_IPV4_CASES = [
 export const PRIVATE_IPV6_CASES = [
   'fc00::1',
   'fd00::',
+  'fd00::8.8.8.8',
   'fd12:3456:789a::1',
   'FCAB::1',
 ]
@@ -77,6 +82,7 @@ export const PRIVATE_IPV6_CASES = [
 export const NON_PRIVATE_IPV6_CASES = [
   '::',
   '::1',
+  '2001:db8::192.168.1.1',
   '2001:4860:4860::8888',
   'ff00::1',
   'fec0::1',
@@ -92,6 +98,11 @@ export const INVALID_IPV6_CASES = [
   'fe80',
   'abc:def',
   ':::',
+  'fc00:::',
+  'fd00:def',
+  'fd00:12345::1',
+  'fe80::1::2',
+  'fe80:12345::1',
 ]
 
 // Non-public IPv4 ranges expected to return true for isNonPublicIpv4.
@@ -144,6 +155,7 @@ export const NON_PUBLIC_IPV6_SPECIAL_CASES = ['::', '::1', '::1'.toUpperCase()]
 export const NON_PUBLIC_IPV6_ULA_CASES = [
   'fc00::1',
   'fd00::',
+  'fd00::8.8.8.8',
   'fd12:3456:789a::1',
   'FCAB::1',
 ]
@@ -151,6 +163,7 @@ export const NON_PUBLIC_IPV6_ULA_CASES = [
 // Non-public IPv6 link-local values expected to return true for isNonPublicIpv6.
 export const NON_PUBLIC_IPV6_LINK_LOCAL_CASES = [
   'fe80::1',
+  'fe80::8.8.8.8',
   'fe90::1',
   'fea0::1',
   'febf::abcd',
@@ -158,6 +171,7 @@ export const NON_PUBLIC_IPV6_LINK_LOCAL_CASES = [
 
 // IPv6 values that should be rejected by non-public IPv6 checks.
 export const PUBLIC_OR_UNSUPPORTED_IPV6_CASES = [
+  '2001:db8::192.168.1.1',
   '2001:4860:4860::8888',
   'ff00::1',
   'fec0::1',
