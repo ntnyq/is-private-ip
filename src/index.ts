@@ -42,16 +42,8 @@ export function isPrivateIp(hostname: string): boolean {
 /**
  * Check whether an IPv4 hostname belongs to non-public ranges.
  *
- * Supported non-public ranges:
- * - `0.0.0.0/8` this network
- * - `10.0.0.0/8` private
- * - `100.64.0.0/10` shared address space (CGNAT)
- * - `127.0.0.0/8` loopback
- * - `169.254.0.0/16` link-local
- * - `172.16.0.0/12` private
- * - `192.168.0.0/16` private
- * - `224.0.0.0/4` multicast
- * - `240.0.0.0/4` reserved
+ * Uses longest-prefix matching over IPv4 special-purpose ranges that are not
+ * globally reachable, plus multicast ranges.
  *
  * @param hostname - Hostname in IPv4 format
  * @returns `true` when host is non-public IPv4
@@ -63,11 +55,8 @@ export function isNonPublicIpv4(hostname: string): boolean {
 /**
  * Check whether an IPv6 hostname belongs to non-public ranges.
  *
- * Supported non-public ranges:
- * - `::/128` unspecified
- * - `::1` loopback
- * - `fe80::/10` link-local
- * - `fc00::/7` unique local
+ * Uses longest-prefix matching over IPv6 special-purpose ranges that are not
+ * globally reachable, plus multicast ranges.
  *
  * @param hostname - Hostname in IPv6 format
  * @returns `true` when host is non-public IPv6

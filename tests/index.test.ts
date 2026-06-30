@@ -17,6 +17,7 @@ import {
   NON_PUBLIC_IP_FALSE_CASES,
   NON_PUBLIC_IP_TRUE_CASES,
   NON_PUBLIC_IPV4_CASES,
+  NON_PUBLIC_IPV6_IANA_SPECIAL_CASES,
   NON_PUBLIC_IPV6_LINK_LOCAL_CASES,
   NON_PUBLIC_IPV6_SPECIAL_CASES,
   NON_PUBLIC_IPV6_ULA_CASES,
@@ -107,6 +108,13 @@ describe(isNonPublicIpv4, () => {
 describe(isNonPublicIpv6, () => {
   it.each(NON_PUBLIC_IPV6_SPECIAL_CASES)(
     'returns true for unspecified and loopback addresses: %s',
+    ip => {
+      expect(isNonPublicIpv6(ip)).toBe(true)
+    },
+  )
+
+  it.each(NON_PUBLIC_IPV6_IANA_SPECIAL_CASES)(
+    'returns true for IANA special-purpose IPv6 ranges that are not globally reachable: %s',
     ip => {
       expect(isNonPublicIpv6(ip)).toBe(true)
     },

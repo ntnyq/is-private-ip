@@ -1,11 +1,62 @@
-import {
-  checkNonPublicIpv4Int,
-  checkPrivateIpv4Int,
-  parseIpv4ToInt,
-} from './ipv4'
+import { IPV6_NON_PUBLIC_PREFIX_RULES } from './constants'
+import { checkPrivateIpv4Int, parseIpv4ToInt } from './ipv4'
+import type { ParsedIpv6Address } from './types'
 
-interface ParsedIpv6Address {
-  hextets: number[]
+/**
+ * Convert eight IPv6 hextets into a 128-bit integer.
+ *
+ * @param hextets - Parsed IPv6 hextets
+ * @returns 128-bit integer representation
+ */
+function ipv6ToBigInt(hextets: number[]): bigint {
+  let value = 0n
+
+  for (const hextet of hextets) {
+    value = (value << 16n) | BigInt(hextet)
+  }
+
+  return value
+}
+
+/**
+ * Check whether an IPv6 integer is within a CIDR prefix.
+ *
+ * @param ip - IPv6 address integer
+ * @param base - CIDR base address integer
+ * @param prefixLength - CIDR prefix length
+ * @returns `true` when `ip` is inside the prefix
+ */
+function matchesIpv6Prefix(
+  ip: bigint,
+  base: bigint,
+  prefixLength: number,
+): boolean {
+  const shift = 128n - BigInt(prefixLength)
+  return ip >> shift === base >> shift
+}
+
+/**
+ * Resolve non-public IPv6 status with longest-prefix matching.
+ *
+ * @param hextets - Parsed IPv6 hextets
+ * @returns `true` when host is non-public IPv6
+ */
+function isNonPublicIpv6ByPrefixRules(hextets: number[]): boolean {
+  const ip = ipv6ToBigInt(hextets)
+  let matchedPrefixLength = -1
+  let matchedNonPublic = false
+
+  for (const rule of IPV6_NON_PUBLIC_PREFIX_RULES) {
+    if (
+      rule.prefixLength > matchedPrefixLength &&
+      matchesIpv6Prefix(ip, rule.base, rule.prefixLength)
+    ) {
+      matchedPrefixLength = rule.prefixLength
+      matchedNonPublic = rule.nonPublic
+    }
+  }
+
+  return matchedNonPublic
 }
 
 /**
@@ -155,11 +206,8 @@ export function checkPrivateIpv6(hostname: string): boolean {
 /**
  * Check whether an IPv6 hostname belongs to non-public ranges.
  *
- * Supported non-public ranges:
- * - `::/128` unspecified
- * - `::1` loopback
- * - `fe80::/10` link-local
- * - `fc00::/7` unique local
+ * Uses longest-prefix matching over IPv6 special-purpose ranges that are not
+ * globally reachable, plus multicast ranges.
  *
  * @param hostname - Hostname in IPv6 format
  * @returns `true` when host is non-public IPv6
@@ -170,20 +218,5 @@ export function checkNonPublicIpv6(hostname: string): boolean {
     return false
   }
 
-  if (isIpv4MappedIpv6(parsed.hextets)) {
-    return checkNonPublicIpv4Int(ipv4FromIpv6Tail(parsed.hextets))
-  }
-
-  const firstHextet = parsed.hextets[0] ?? 0
-  const lastHextet = parsed.hextets[7] ?? 0
-  const isUnspecified = parsed.hextets.every(hextet => hextet === 0)
-  const isLoopback =
-    parsed.hextets.slice(0, 7).every(hextet => hextet === 0) && lastHextet === 1
-
-  return (
-    isUnspecified ||
-    isLoopback ||
-    (firstHextet >= 0xfe80 && firstHextet <= 0xfebf) ||
-    (firstHextet >= 0xfc00 && firstHextet <= 0xfdff)
-  )
+  return isNonPublicIpv6ByPrefixRules(parsed.hextets)
 }

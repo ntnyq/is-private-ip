@@ -21,6 +21,7 @@ export const IPV4_MAPPED_PRIVATE_IPV6_CASES = [
 // IPv4-mapped IPv6 addresses that should return true for isNonPublicIpv6.
 export const IPV4_MAPPED_NON_PUBLIC_IPV6_CASES = [
   '::ffff:10.0.0.1',
+  '::ffff:8.8.8.8',
   '::ffff:127.0.0.1',
   '::ffff:100.64.0.1',
   '::ffff:169.254.1.1',
@@ -121,8 +122,17 @@ export const NON_PUBLIC_IPV4_CASES = [
   '172.16.0.0',
   '172.20.10.5',
   '172.31.255.255',
+  '192.0.0.0',
+  '192.0.0.8',
+  '192.0.0.170',
+  '192.0.0.171',
+  '192.0.2.1',
   '192.168.0.1',
   '192.168.255.255',
+  '198.18.0.1',
+  '198.19.255.255',
+  '198.51.100.1',
+  '203.0.113.10',
   '224.0.0.1',
   '239.255.255.255',
   '240.0.0.1',
@@ -142,14 +152,30 @@ export const PUBLIC_IPV4_CASES = [
   '169.255.0.1',
   '172.15.255.255',
   '172.32.0.1',
+  '192.0.0.9',
+  '192.0.0.10',
+  '192.31.196.1',
   '192.167.255.255',
   '192.169.0.0',
-  '203.0.113.10',
   '223.255.255.255',
 ]
 
 // Non-public special IPv6 values like unspecified and loopback.
 export const NON_PUBLIC_IPV6_SPECIAL_CASES = ['::', '::1', '::1'.toUpperCase()]
+
+// IANA IPv6 special-purpose ranges that are not globally reachable.
+export const NON_PUBLIC_IPV6_IANA_SPECIAL_CASES = [
+  '::ffff:8.8.8.8',
+  '64:ff9b:1::1',
+  '100::1',
+  '100:0:0:1::1',
+  '2001::1',
+  '2001:2::1',
+  '2001:db8::1',
+  '2002::1',
+  '3fff::1',
+  '5f00::1',
+]
 
 // Non-public IPv6 ULA values expected to return true for isNonPublicIpv6.
 export const NON_PUBLIC_IPV6_ULA_CASES = [
@@ -171,9 +197,15 @@ export const NON_PUBLIC_IPV6_LINK_LOCAL_CASES = [
 
 // IPv6 values that should be rejected by non-public IPv6 checks.
 export const PUBLIC_OR_UNSUPPORTED_IPV6_CASES = [
-  '2001:db8::192.168.1.1',
+  '64:ff9b::8.8.8.8',
+  '2001:1::1',
+  '2001:1::2',
+  '2001:1::3',
+  '2001:3::1',
+  '2001:4:112::1',
+  '2001:20::1',
+  '2001:30::1',
   '2001:4860:4860::8888',
-  'ff00::1',
   'fec0::1',
   'fe70::1',
   'febg::1',
@@ -211,19 +243,26 @@ export const NON_PUBLIC_IP_TRUE_CASES = [
   '127.0.0.1',
   '169.254.1.1',
   '172.16.0.1',
+  '192.0.2.1',
   '192.168.1.10',
+  '198.51.100.1',
+  '203.0.113.20',
   '240.0.0.1',
   '::',
   '::1',
+  '100::1',
+  '2001:db8::1',
   'fd00::1',
   'fe80::1',
+  'ff00::1',
 ]
 
 // Inputs expected to return false for the non-public aggregate API.
 export const NON_PUBLIC_IP_FALSE_CASES = [
   '8.8.8.8',
-  '203.0.113.20',
+  '192.0.0.9',
   '2001:4860:4860::8888',
+  '2001:1::1',
   'example.com',
   '',
 ]

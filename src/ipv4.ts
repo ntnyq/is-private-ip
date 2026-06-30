@@ -1,3 +1,45 @@
+import { IPV4_NON_PUBLIC_PREFIX_RULES } from './constants'
+
+/**
+ * Check whether an IPv4 integer is within a CIDR prefix.
+ *
+ * @param ip - IPv4 address integer
+ * @param base - CIDR base address integer
+ * @param prefixLength - CIDR prefix length
+ * @returns `true` when `ip` is inside the prefix
+ */
+function matchesIpv4Prefix(
+  ip: number,
+  base: number,
+  prefixLength: number,
+): boolean {
+  const mask = 0xffffffff - 2 ** (32 - prefixLength) + 1
+  return (ip & mask) === (base & mask)
+}
+
+/**
+ * Resolve non-public IPv4 status with longest-prefix matching.
+ *
+ * @param ip - IPv4 address integer
+ * @returns `true` when host is non-public IPv4
+ */
+function isNonPublicIpv4IntByPrefixRules(ip: number): boolean {
+  let matchedPrefixLength = -1
+  let matchedNonPublic = false
+
+  for (const rule of IPV4_NON_PUBLIC_PREFIX_RULES) {
+    if (
+      rule.prefixLength > matchedPrefixLength &&
+      matchesIpv4Prefix(ip, rule.base, rule.prefixLength)
+    ) {
+      matchedPrefixLength = rule.prefixLength
+      matchedNonPublic = rule.nonPublic
+    }
+  }
+
+  return matchedNonPublic
+}
+
 /**
  * Parse an IPv4 address string into a 32-bit integer using single-pass
  * character-level parsing. Rejects zero-padded formats like `010.0.0.1`.
@@ -71,18 +113,7 @@ export function checkPrivateIpv4Int(ip: number): boolean {
  * @returns `true` when host is non-public IPv4
  */
 export function checkNonPublicIpv4Int(ip: number): boolean {
-  const a = ip >>> 24
-  const b = (ip >>> 16) & 0xff
-  return (
-    a === 0 ||
-    a === 10 ||
-    (a === 100 && b >= 64 && b <= 127) ||
-    a === 127 ||
-    (a === 169 && b === 254) ||
-    (a === 172 && b >= 16 && b <= 31) ||
-    (a === 192 && b === 168) ||
-    a >= 224
-  )
+  return isNonPublicIpv4IntByPrefixRules(ip)
 }
 
 /**
@@ -107,16 +138,8 @@ export function checkPrivateIpv4(hostname: string): boolean {
 /**
  * Check whether an IPv4 hostname belongs to non-public ranges.
  *
- * Supported non-public ranges:
- * - `0.0.0.0/8` this network
- * - `10.0.0.0/8` private
- * - `100.64.0.0/10` shared address space (CGNAT)
- * - `127.0.0.0/8` loopback
- * - `169.254.0.0/16` link-local
- * - `172.16.0.0/12` private
- * - `192.168.0.0/16` private
- * - `224.0.0.0/4` multicast
- * - `240.0.0.0/4` reserved
+ * Uses longest-prefix matching over IPv4 special-purpose ranges that are not
+ * globally reachable, plus multicast ranges.
  *
  * @param hostname - Hostname in IPv4 format
  * @returns `true` when host is non-public IPv4
