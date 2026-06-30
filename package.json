@@ -1,6 +1,6 @@
 {
   "name": "is-private-ip",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Tiny utility to detect private/local/non-public IPv4 and IPv6 addresses.",
   "keywords": [
     "ip",
